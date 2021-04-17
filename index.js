@@ -17,7 +17,8 @@ const express = require('express');
 	client.connect(err => {
     		console.log('Connection Error:', err);
     		const courseCollection = client.db("e-learning").collection("course");
-    		const messageCollection = client.db("e-learning").collection("message");
+    		const reviewMessageCollection = client.db("e-learning").collection("message");
+    		const contactMessageCollection = client.db("e-learning").collection("contact-message");
     		const orderCollection = client.db("e-learning").collection("order");
     		const adminCollection = client.db("e-learning").collection("admin");
     		console.log("Database Connected Successfully!");
@@ -94,16 +95,41 @@ const express = require('express');
 			app.post('/review', (req, res)=>{
 				const newReview = req.body;
 				// console.log('Add to server:', newProduct);
-				messageCollection.insertOne(newReview)
+				reviewMessageCollection.insertOne(newReview)
 				.then(result => {
 					// console.log('inserted count:', result.insertedCount)
 					res.send(result.insertedCount > 0)
 				}) 
 			})
 			app.get('/getReview', (req, res)=>{
-				messageCollection.find({})
+				reviewMessageCollection.find({})
 				.toArray((err, items) =>{
 					res.send(items)
+				})
+			})
+
+			
+			app.post('/contactMessage', (req, res)=>{
+				const newContactMessage = req.body;
+				// console.log('Add to server:', newProduct);
+				contactMessageCollection.insertOne(newContactMessage)
+				.then(result => {
+					// console.log('inserted count:', result.insertedCount)
+					res.send(result.insertedCount > 0)
+				}) 
+			})
+			app.get('/getContactMessage', (req, res)=>{
+				contactMessageCollection.find({})
+				.toArray((err, items) =>{
+					res.send(items)
+				})
+			})
+			app.delete("/deleteContactMessage/:id", (req, res)=>{
+				// console.log(req.params.id);
+				contactMessageCollection.deleteOne({_id: ObjectID(req.params.id)})
+				.then(result =>{
+				//   console.log(result);
+				  res.send(result.deletedCount > 0)
 				})
 			})
 
